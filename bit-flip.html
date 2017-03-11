@@ -1,0 +1,129 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<!--
+`bit-flip`
+
+
+@demo demo/index.html 
+-->
+
+<dom-module id="bit-flip">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+      <template is="dom-if" if={{show}}>
+          <p style="font-size: 22px">{{hexidecimal}}</p>
+          <p style="font-size: 6px">{{binary}}</p>
+          <p><a href="#" style="font-size: 14px" on-tap="ready">Flip Again</a></p>
+      </template>
+  </template>  
+
+  <script>
+Polymer({
+
+  is: 'bit-flip',
+
+  /**
+  * Fired when an error is received.
+  *
+  * @event error
+  * @event bit-flip-error
+  */
+
+  properties: {
+    bits: {
+        type: Number,
+        value: 256,
+    },
+    hexidecimal:{
+        type: String,
+        notify: true,
+    },
+    binary:{
+        type: String,
+        notify: true,
+    },
+    show:{
+        type: Boolean,
+        value: false
+    }
+  },
+    
+    ready: function(){
+        this._flip(this.bits)
+            .then(result1 => {     
+                return this._binaryToHex(result1)
+            })
+            .then(result2 => {
+                this.hexidecimal = result2.hex
+                this.binary = result2.binary
+            })
+            .catch(error => {
+                this._handleError(true);
+        });
+    },
+
+    _handleError: function(error) {
+      this.fire('bit-flip-error', {
+        error: error
+      }, {bubbles: this.bubbles});
+      this.fire('error', {
+        error: error
+      }, {bubbles: this.bubbles});
+    },
+
+    _flip: function (bits) {
+      return new Promise(
+      function (resolve, reject) { 
+          if(bits <= 0){
+            reject();
+          }  
+          let binary = ''
+          for (i = 0; i < bits; i++) { 
+            let flip = Math.floor(Math.random() * 2);
+            binary = binary + flip
+            if(binary.length == bits-1){
+              resolve(binary);
+            }
+          }
+      })
+    },
+
+    _binaryToHex: function (binary) {
+      return new Promise(
+      function (resolve, reject) {      
+            var i, k, part, accum, ret = '';
+            for (i = binary.length-1; i >= 3; i -= 4) {
+                part = binary.substr(i+1-4, 4);
+                accum = 0;
+                for (k = 0; k < 4; k += 1) {
+                    if (part[k] !== '0' && part[k] !== '1') {
+                        reject();
+                    }
+                    accum = accum * 2 + parseInt(part[k], 10);
+                }
+                if (accum >= 10) {
+                    ret = String.fromCharCode(accum - 10 + 'A'.charCodeAt(0)) + ret;
+                } else {
+                    ret = String(accum) + ret;
+                }
+            }
+            if (i >= 0) {
+                accum = 0;
+                for (k = 0; k <= i; k += 1) {
+                    if (binary[k] !== '0' && binary[k] !== '1') {
+                        return { valid: false };
+                    }
+                    accum = accum * 2 + parseInt(binary[k], 10);
+                }
+                hex = String(accum) + ret;
+            }
+            resolve({"hex":hex, "binary":binary});
+        })
+    }
+});
+  </script>
+</dom-module>

@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>bit-flip demo</title>
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+    <link rel="import" href="../bit-flip.html">
+
+    <style is="custom-style" include="demo-pages-shared-styles">
+    </style>
+  </head>
+  <body>
+    <div class="vertical-section-container centered" style="min-width: 900px">
+      <h2>bit-flip demo</h2>
+      <p>For each of the bits requested, a random 0 or 1 is generated from JavaScript's' Math.random. This creates a binary string,
+        </br> which is converted to hexidecimal, both are reflected at the same time.
+      </p>
+      <demo-snippet>
+        <template>
+          <bit-flip bits="256" 
+            hexidecimal="{{hexadecimal}}" 
+            binary="{{binary}}" 
+            show></bit-flip>
+        </template>
+      </demo-snippet>
+    </div>
+  </body>
+</html>
